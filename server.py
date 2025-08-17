@@ -3,7 +3,7 @@ import threading
 
 
 SERVER_IP = "0.0.0.0"
-SERVER_PORT = 5000
+SERVER_PORT = 23194
 
 clients = []
 
