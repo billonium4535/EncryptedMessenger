@@ -2,9 +2,15 @@ import socket
 import threading
 import sys
 
+from Config.config_reader import config_parser
+from Encryption.encryption_utils import derive_room_key, encrypt, decrypt
 
-SERVER_IP = "127.0.0.1"
-SERVER_PORT = 5000
+
+SERVER_IP = config_parser("./Config/client_config.ini", "DEFAULT", "IP_ADDRESS")
+SERVER_PORT = config_parser("./Config/client_config.ini", "DEFAULT", "PORT")
+
+MESSAGE_PREFIX = b"MSG >"
+
 
 
 def receive_message(sock, name):
