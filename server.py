@@ -25,12 +25,14 @@ def handle_client(connection, address):
 
 def broadcast(data, connection):
     for client in clients:
-        if client != connection:
-            try:
-                client.send(data)
-            except:
-                client.close()
-                clients.remove(client)
+        # if client != connection:
+        try:
+            client.send(data)
+        except:
+            client.close()
+            clients.remove(client)
+        # else:
+        #     print(f"Client {client} sent {data}")
 
 
 def main():
