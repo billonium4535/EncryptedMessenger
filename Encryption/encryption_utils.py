@@ -6,8 +6,8 @@ from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
 
 from Config.config_reader import config_parser
 
-# PROTOCOL = config_parser("../Config/client_config.ini", "DEFAULT", "ENCRYPTION_PROTOCOL").encode("utf-8")
-PROTOCOL = b"chat-group-e2e-v1"
+ADDITIONAL_AUTHENTICATED_DATA = config_parser("../Config/client_config.ini", "DEFAULT", "ADDITIONAL_AUTHENTICATED_DATA").encode("utf-8")
+
 
 
 def derive_room_key(room: str, passphrase: str) -> bytes:
@@ -19,7 +19,11 @@ def derive_room_key(room: str, passphrase: str) -> bytes:
 def encrypt(key: bytes, plaintext: bytes) -> bytes:
     aead = ChaCha20Poly1305(key)
     nonce = os.urandom(12)
-    ct = aead.encrypt(nonce, plaintext, PROTOCOL)
+
+    # Encrypt the plaintext
+    ct = aead.encrypt(nonce, plaintext, ADDITIONAL_AUTHENTICATED_DATA)
+
+    # Merge nonce and cyphertext, then encode and return
     return base64.b64encode(nonce + ct)
 
 
@@ -27,4 +31,6 @@ def decrypt(key: bytes, payload_b64: bytes) -> bytes:
     raw = base64.b64decode(payload_b64)
     nonce, ct = raw[:12], raw[12:]
     aead = ChaCha20Poly1305(key)
-    return aead.decrypt(nonce, ct, PROTOCOL)
+
+    # Decrypt and return the data
+    return aead.decrypt(nonce, ct, ADDITIONAL_AUTHENTICATED_DATA)
