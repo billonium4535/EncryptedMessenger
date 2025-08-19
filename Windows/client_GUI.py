@@ -5,9 +5,9 @@ from client import Client
 from Config.config_reader import config_parser
 
 
-SERVER_IP = config_parser("./Config/client_config.ini", "DEFAULT", "IP_ADDRESS")
-SERVER_PORT = config_parser("./Config/client_config.ini", "DEFAULT", "PORT")
-GUI_TITLE = config_parser("./Config/client_config.ini", "GUI", "TITLE")
+SERVER_IP = config_parser("../Config/client_config.ini", "DEFAULT", "IP_ADDRESS")
+SERVER_PORT = config_parser("../Config/client_config.ini", "DEFAULT", "PORT")
+GUI_TITLE = config_parser("../Config/client_config.ini", "GUI", "TITLE")
 
 
 class EncryptedMessengerGUI:
@@ -49,7 +49,7 @@ class EncryptedMessengerGUI:
         message = self.entry.get().strip()
         if message:
             self.client.send_message(message)
-            self.display_message(f"{self.client.name}: {message}")
+            # self.display_message(f"{self.client.name}: {message}")
             self.entry.delete(0, tk.END)
 
 
