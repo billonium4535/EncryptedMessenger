@@ -62,9 +62,9 @@ class Client:
                     break
 
     def run(self):
-        self.name = input("Enter name: ")
-        self.room = input("Enter room: ")
-        passphrase = input("Enter passphrase: ")
+        self.name = input("Enter name >")
+        self.room = input("Enter room >")
+        passphrase = input("Enter password >")
         self.key = derive_room_key(self.room, passphrase)
 
         self.socket.connect((self.server_ip, self.server_port))
@@ -80,7 +80,6 @@ class Client:
             b64_payload = encrypt(self.key, plaintext)
             self.send_line(MESSAGE_PREFIX, b64_payload)
 
-            # sys.stdout.write("> ")
             sys.stdout.flush()
 
 
