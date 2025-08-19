@@ -1,2 +1,20 @@
 # Ignore all .ini configuration files
 *.ini
+
+# Gradle build files
+Android/.gradle
+Android/build
+*/build/
+
+# Local config
+Android/local.properties
+Android/.idea
+*.iml
+*.hprof
+
+# Keystore files
+*.jks
+*.keystore
+
+# Others
+.DS_Store
