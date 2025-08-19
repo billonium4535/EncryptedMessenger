@@ -1,6 +1,5 @@
 import socket
 import threading
-import sys
 
 from Config.config_reader import config_parser
 from Encryption.encryption_utils import derive_room_key, encrypt, decrypt
