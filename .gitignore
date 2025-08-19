@@ -8,7 +8,7 @@ Android/build
 
 # Local config
 Android/local.properties
-Android/.idea
+Android/.idea/
 *.iml
 *.hprof
 
