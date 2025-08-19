@@ -11,7 +11,7 @@ MESSAGE_PREFIX = config_parser("./Config/client_config.ini", "DEFAULT", "MESSAGE
 
 
 class Client:
-    def __init__(self, server_ip: str, server_port: int):
+    def __init__(self, server_ip: str, server_port: int, message_callback):
         self.server_ip = server_ip
         self.server_port = server_port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -19,6 +19,7 @@ class Client:
         self.name = None
         self.room = None
         self.buffer = bytearray()
+        self.message_callback = message_callback
 
     def send_line(self, prefix: bytes, payload_b64: bytes):
         self.socket.sendall(prefix + payload_b64 + b"\n")
@@ -44,46 +45,30 @@ class Client:
                             continue
                         try:
                             plaintext = decrypt(self.key, payload_b64).decode("utf-8", errors="replace")
-                            sys.stdout.write("\r" + plaintext + "\n> ")
-                            sys.stdout.flush()
+                            self.message_callback(plaintext)
                         except Exception:
-                            sys.stdout.write("\r[!] failed to decrypt a message\n> ")
-                            sys.stdout.flush()
-                    else:
-                        pass
+                            self.message_callback("[!] failed to decrypt a message")
             except Exception:
-                sys.stdout.write("\n[!] Disconnected from server\n")
-                sys.stdout.flush()
+                self.message_callback("[!] Disconnected from server")
                 try:
                     self.socket.close()
                 finally:
                     break
 
-    def run(self):
-        self.name = input("Enter name >")
-        self.room = input("Enter room >")
-        passphrase = input("Enter password >")
-        self.key = derive_room_key(self.room, passphrase)
-
+    def connect(self, name, room, passphrase):
+        self.name = name
+        self.room = room
+        self.key = derive_room_key(room, passphrase)
         self.socket.connect((self.server_ip, self.server_port))
         threading.Thread(target=self.receiver, daemon=True).start()
 
-        while True:
-            message = input("> ")
-            if message.lower() == "/quit":
-                self.socket.close()
-                break
+    def send_message(self, message: str):
+        plaintext = f"{self.name}: {message}".encode("utf-8")
+        b64_payload = encrypt(self.key, plaintext)
+        self.send_line(MESSAGE_PREFIX, b64_payload)
 
-            plaintext = f"{self.name}: {message}".encode("utf-8")
-            b64_payload = encrypt(self.key, plaintext)
-            self.send_line(MESSAGE_PREFIX, b64_payload)
-
-            sys.stdout.flush()
-
-
-def main():
-    client = Client(SERVER_IP, int(SERVER_PORT))
-    client.run()
-
-
-main()
+    def disconnect(self):
+        try:
+            self.socket.close()
+        except Exception:
+            pass
