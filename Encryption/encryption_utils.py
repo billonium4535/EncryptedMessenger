@@ -6,7 +6,7 @@ from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
 
 from Config.config_reader import config_parser
 
-ADDITIONAL_AUTHENTICATED_DATA = config_parser("../Config/client_config.ini", "DEFAULT", "ADDITIONAL_AUTHENTICATED_DATA").encode("utf-8")
+ADDITIONAL_AUTHENTICATED_DATA = config_parser("./Config/client_config.ini", "DEFAULT", "ADDITIONAL_AUTHENTICATED_DATA").encode("utf-8")
 
 
 def derive_room_key(room: str, passkey: str) -> bytes:
