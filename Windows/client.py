@@ -3,12 +3,12 @@ import threading
 import time
 
 from Config.config_reader import config_parser
-from Encryption.encryption_utils import derive_room_key, encrypt, decrypt
+from encryption_utils import derive_room_key, encrypt, decrypt
 
 
-SERVER_IP = config_parser("../Config/client_config.ini", "DEFAULT", "IP_ADDRESS")
-SERVER_PORT = config_parser("../Config/client_config.ini", "DEFAULT", "PORT")
-MESSAGE_PREFIX = config_parser("../Config/client_config.ini", "DEFAULT", "MESSAGE_PREFIX").encode("utf-8")
+SERVER_IP = config_parser("./Config/client_config.ini", "DEFAULT", "IP_ADDRESS")
+SERVER_PORT = config_parser("./Config/client_config.ini", "DEFAULT", "PORT")
+MESSAGE_PREFIX = config_parser("./Config/client_config.ini", "DEFAULT", "MESSAGE_PREFIX").encode("utf-8")
 
 
 class Client:
