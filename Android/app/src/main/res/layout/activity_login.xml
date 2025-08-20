@@ -9,25 +9,33 @@
         android:id="@+id/usernameInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Username" />
+        android:autofillHints="username"
+        android:hint="@string/hint_username"
+        android:inputType="textPersonName"
+        android:importantForAutofill="yes" />
 
     <EditText
         android:id="@+id/roomInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Room" />
+        android:autofillHints="nickname"
+        android:hint="@string/hint_room"
+        android:inputType="text"
+        android:importantForAutofill="yes" />
 
     <EditText
         android:id="@+id/passwordInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
-        android:inputType="textPassword" />
+        android:autofillHints="password"
+        android:hint="@string/hint_password"
+        android:inputType="textPassword"
+        android:importantForAutofill="yes" />
 
     <Button
         android:id="@+id/connectButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Connect"
+        android:text="@string/connect_button"
         android:layout_marginTop="20dp"/>
 </LinearLayout>

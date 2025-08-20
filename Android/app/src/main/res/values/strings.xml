@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">EncryptedMessenger</string>
+    <string name="error_key_derivation">[!] Key derivation failed: %1$s</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_room">Room</string>
+    <string name="hint_password">Password</string>
+    <string name="connect_button">Connect</string>
+</resources>
