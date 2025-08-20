@@ -22,7 +22,6 @@ public class LoginActivity extends AppCompatActivity {
     private EditText usernameInput;
     private EditText roomInput;
     private EditText passwordInput;
-    private Button connectButton;
 
     /**
      * Called when the activity is first created.
@@ -43,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         usernameInput = findViewById(R.id.usernameInput);
         roomInput = findViewById(R.id.roomInput);
         passwordInput = findViewById(R.id.passwordInput);
-        connectButton = findViewById(R.id.connectButton);
+        Button connectButton = findViewById(R.id.connectButton);
 
         // Set listener for the connect button
         connectButton.setOnClickListener(v -> {
