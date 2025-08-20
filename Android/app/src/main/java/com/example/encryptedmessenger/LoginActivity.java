@@ -8,38 +8,68 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+
+/**
+ * LoginActivity handles user input for logging into the encrypted chat.
+ * <p>
+ * Users provide a username, room name, and passphrase.
+ * After validation, the activity launches MainActivity with the login details.
+ * </p>
+ */
 public class LoginActivity extends AppCompatActivity {
 
+    // UI
     private EditText usernameInput;
     private EditText roomInput;
     private EditText passwordInput;
     private Button connectButton;
 
+    /**
+     * Called when the activity is first created.
+     * <p>
+     * Initialises the UI and sets up the click listener for the connect button.
+     * </p>
+     *
+     * @param savedInstanceState Standard bundle containing activity state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Set layout for login screen
         setContentView(R.layout.activity_login);
 
+        // Initialise UI
         usernameInput = findViewById(R.id.usernameInput);
         roomInput = findViewById(R.id.roomInput);
         passwordInput = findViewById(R.id.passwordInput);
         connectButton = findViewById(R.id.connectButton);
 
+        // Set listener for the connect button
         connectButton.setOnClickListener(v -> {
+            // Retrieve user inputs and trim whitespace
             String username = usernameInput.getText().toString().trim();
             String room = roomInput.getText().toString().trim();
             String password = passwordInput.getText().toString().trim();
 
+            // Validate that all fields are filled
             if (username.isEmpty() || room.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
+
+                // Stop further execution if validation fails
                 return;
             }
 
+            // Create an intent to start MainActivity with login details
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra("USERNAME", username);
             intent.putExtra("ROOM", room);
             intent.putExtra("PASSWORD", password);
+
+            // Launch MainActivity
             startActivity(intent);
+
+            // Close LoginActivity so user cannot go back
             finish();
         });
     }

@@ -18,7 +18,9 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * MainActivity handles the UI and networking for a secure encrypted chat.
+ * <p>
  * It connects to a server, encrypts messages before sending, and decrypts incoming messages.
+ * </p>
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -47,7 +49,9 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Called when the activity is first created.
+     * <p>
      * Sets up the UI, gets the user login info, derives encryption key, and connects to server.
+     * </p>
      *
      * @param savedInstanceState Standard bundle containing activity state.
      */
@@ -121,7 +125,9 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Encrypts a plaintext message and sends it to the server.
+     * <p>
      * Runs in a separate thread to avoid blocking the UI.
+     * </p>
      *
      * @param plaintext The plaintext message to send.
      */
@@ -148,7 +154,9 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Handles incoming messages from the server.
+     * <p>
      * Decrypts messages with the protocol prefix and displays them in the chatBox.
+     * </p>
      *
      * @param line The raw line received from the server.
      */
@@ -185,7 +193,9 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Called when the activity is destroyed.
+     * <p>
      * Ensures socket connection is closed properly.
+     * </p>
      */
     @Override
     protected void onDestroy() {
