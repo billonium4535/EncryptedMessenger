@@ -15,13 +15,18 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
+
+/**
+ * MainActivity handles the UI and networking for a secure encrypted chat.
+ * It connects to a server, encrypts messages before sending, and decrypts incoming messages.
+ */
 public class MainActivity extends AppCompatActivity {
 
-    // Server config
+    // Server config pulled from build settings
     String SERVER_IP = BuildConfig.SERVER_IP;
     int SERVER_PORT = BuildConfig.SERVER_PORT;
 
-    // Setup config
+    // Setup config pulled from build settings
     String MESSAGE_PREFIX = BuildConfig.MESSAGE_PREFIX;
     String AAD_STR = BuildConfig.AAD_STR;
 
@@ -32,18 +37,26 @@ public class MainActivity extends AppCompatActivity {
 
     // Networking
     private Socket socket;
+
+    // Reader and writer
     private PrintWriter writer;
     private BufferedReader reader;
 
     // Key
     private byte[] key;
 
+    /**
+     * Called when the activity is first created.
+     * Sets up the UI, gets the user login info, derives encryption key, and connects to server.
+     *
+     * @param savedInstanceState Standard bundle containing activity state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get login data
+        // Get login data from Intent extras
         Intent intent = getIntent();
         String USERNAME = intent.getStringExtra("USERNAME");
         String ROOM = intent.getStringExtra("ROOM");
@@ -60,24 +73,35 @@ public class MainActivity extends AppCompatActivity {
             assert PASSPHRASE != null;
             key = EncryptionHelper.deriveRoomKey(ROOM, PASSPHRASE);
         } catch (Exception e) {
+
+            // Show error if key derivation fails
             chatBox.setText(getString(R.string.error_key_derivation, e.getMessage()));
             return;
         }
 
-        // Connect
+        // Connect in a separate thread
         new Thread(() -> {
             try {
+                // Connect to server
                 socket = new Socket(SERVER_IP, SERVER_PORT);
+
+                // Set up writer
                 writer = new PrintWriter(socket.getOutputStream(), true);
+
+                // Set up reader
                 reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+                // Update UI
                 runOnUiThread(() -> chatBox.append("\n[+] Connected to server"));
 
+                // Continuously read incoming messages
                 String line;
                 while ((line = reader.readLine()) != null) {
+                    // Process incoming message
                     handleIncoming(line);
                 }
             } catch (Exception e) {
+                // Show connection error in UI
                 runOnUiThread(() -> chatBox.append("\n[!] Connection error: " + e.getMessage()));
             }
         }).start();
@@ -86,50 +110,72 @@ public class MainActivity extends AppCompatActivity {
         sendButton.setOnClickListener(v -> {
             String msg = inputBox.getText().toString().trim();
             if (!msg.isEmpty()) {
+                // Encrypt and send message
                 sendEncrypted(USERNAME + ": " + msg);
+
+                // Clear input box
                 inputBox.setText("");
             }
         });
     }
 
+    /**
+     * Encrypts a plaintext message and sends it to the server.
+     * Runs in a separate thread to avoid blocking the UI.
+     *
+     * @param plaintext The plaintext message to send.
+     */
     private void sendEncrypted(String plaintext) {
         new Thread(() -> {
             try {
                 if (writer != null && key != null) {
+                    // Encrypt the message using key and AAD, encode as Base64
                     String payloadB64 = EncryptionHelper.encrypt(
                             key,
                             plaintext.getBytes(StandardCharsets.UTF_8),
                             AAD_STR.getBytes(StandardCharsets.UTF_8)
                     );
+                    // Send the encrypted message with protocol prefix
                     writer.println(MESSAGE_PREFIX + payloadB64);
                 }
             } catch (Exception e) {
+                // Show error if encryption or sending fails
                 runOnUiThread(() ->
                         chatBox.append("\n[!] Encrypt/send error: " + e.getMessage()));
             }
         }).start();
     }
 
+    /**
+     * Handles incoming messages from the server.
+     * Decrypts messages with the protocol prefix and displays them in the chatBox.
+     *
+     * @param line The raw line received from the server.
+     */
     private void handleIncoming(String line) {
         if (line.startsWith(MESSAGE_PREFIX)) {
+            // Extract Base64 payload from protocol message
             String payloadB64 = line.substring(MESSAGE_PREFIX.length());
             try {
+                // Decrypt message
                 byte[] pt = EncryptionHelper.decrypt(
                         key,
                         payloadB64,
                         AAD_STR.getBytes(StandardCharsets.UTF_8)
                 );
                 String text = new String(pt, StandardCharsets.UTF_8);
+
+                // Display decrypted message and scroll to bottom
                 runOnUiThread(() -> {
                     chatBox.append("\n" + text);
                     scrollView.fullScroll(ScrollView.FOCUS_DOWN);
                 });
             } catch (Exception ex) {
-                // runOnUiThread(() -> chatBox.append("\n[!] Failed to decrypt a message"));
+                // Failed decryption, ignore silently
 
             }
         } else {
-            // Optional: show non-protocol lines (server logs, etc.)
+            // Show non-protocol lines (server logs, etc.)
             runOnUiThread(() -> {
                 chatBox.append("\n" + line);
                 scrollView.fullScroll(ScrollView.FOCUS_DOWN);
@@ -137,9 +183,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Called when the activity is destroyed.
+     * Ensures socket connection is closed properly.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        try { if (socket != null) socket.close(); } catch (Exception ignored) {}
+        try {
+            // Close network socket
+            if (socket != null) socket.close();
+        } catch (Exception ignored) {}
     }
 }
