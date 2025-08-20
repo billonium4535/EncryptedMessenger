@@ -2,7 +2,55 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- Room name and connection status -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="4dp">
+
+        <ImageButton
+            android:id="@+id/exitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:contentDescription="@string/exit_chat"
+            android:padding="8dp"/>
+
+        <TextView
+            android:id="@+id/roomNameText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:scrollHorizontally="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="Room Name" />
+
+        <TextView
+            android:id="@+id/connectionStatusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(disconnected)"
+            android:textColor="@android:color/holo_red_dark"
+            android:textStyle="italic" />
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/black"
+        android:layout_marginBottom="4dp"/>
 
     <!-- Chat messages area -->
     <ScrollView
@@ -20,7 +68,14 @@
             android:textSize="16sp" />
     </ScrollView>
 
-    <!-- Input + Send button -->
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/black"
+        android:layout_marginBottom="4dp"/>
+
+    <!-- Input and send button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

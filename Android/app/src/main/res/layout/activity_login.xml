@@ -1,41 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="24dp">
 
-    <EditText
-        android:id="@+id/usernameInput"
-        android:layout_width="match_parent"
+    <!-- Top text -->
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:autofillHints="username"
-        android:hint="@string/hint_username"
-        android:inputType="textPersonName"
-        android:importantForAutofill="yes" />
+        android:text="@string/app_name"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp"/>
 
-    <EditText
-        android:id="@+id/roomInput"
-        android:layout_width="match_parent"
+    <!-- Middle input container -->
+    <LinearLayout
+        android:id="@+id/inputContainer"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:autofillHints="nickname"
-        android:hint="@string/hint_room"
-        android:inputType="text"
-        android:importantForAutofill="yes" />
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintTop_toBottomOf="@id/titleText"
+        app:layout_constraintBottom_toTopOf="@id/connectButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <EditText
-        android:id="@+id/passwordInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:autofillHints="password"
-        android:hint="@string/hint_password"
-        android:inputType="textPassword"
-        android:importantForAutofill="yes" />
+        <EditText
+            android:id="@+id/usernameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="username"
+            android:hint="@string/hint_username"
+            android:inputType="textPersonName"
+            android:importantForAutofill="yes" />
 
+        <EditText
+            android:id="@+id/roomInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="nickname"
+            android:hint="@string/hint_room"
+            android:inputType="text"
+            android:importantForAutofill="yes" />
+
+        <EditText
+            android:id="@+id/passwordInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="password"
+            android:hint="@string/hint_password"
+            android:inputType="textPassword"
+            android:importantForAutofill="yes" />
+    </LinearLayout>
+
+    <!-- Bottom button -->
     <Button
         android:id="@+id/connectButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/connect_button"
-        android:layout_marginTop="20dp"/>
-</LinearLayout>
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
