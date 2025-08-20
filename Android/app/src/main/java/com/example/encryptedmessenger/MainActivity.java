@@ -125,7 +125,8 @@ public class MainActivity extends AppCompatActivity {
                     scrollView.fullScroll(ScrollView.FOCUS_DOWN);
                 });
             } catch (Exception ex) {
-                runOnUiThread(() -> chatBox.append("\n[!] Failed to decrypt a message"));
+                // runOnUiThread(() -> chatBox.append("\n[!] Failed to decrypt a message"));
+
             }
         } else {
             // Optional: show non-protocol lines (server logs, etc.)
