@@ -57,9 +57,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Derive key
         try {
+            assert PASSPHRASE != null;
             key = EncryptionHelper.deriveRoomKey(ROOM, PASSPHRASE);
         } catch (Exception e) {
-            chatBox.setText("[!] Key derivation failed: " + e.getMessage());
+            chatBox.setText(getString(R.string.error_key_derivation, e.getMessage()));
             return;
         }
 
