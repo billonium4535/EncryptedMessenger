@@ -14,6 +14,7 @@ import android.widget.TextView;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
@@ -131,8 +132,12 @@ public class MainActivity extends AppCompatActivity {
         new Thread(() -> {
             while (true) {
                 try {
+                    // Show user reconnecting
+                    runOnUiThread(this::setReconnecting);
+
                     // Connect to server
-                    socket = new Socket(SERVER_IP, SERVER_PORT);
+                    socket = new Socket();
+                    socket.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT), 5000);
 
                     // Set up writer
                     writer = new PrintWriter(socket.getOutputStream(), true);
@@ -166,6 +171,11 @@ public class MainActivity extends AppCompatActivity {
     private void setConnected() {
         connectionStatusText.setText(R.string.connected_status);
         connectionStatusText.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark));
+    }
+
+    private void setReconnecting() {
+        connectionStatusText.setText(R.string.reconnecting_status);
+        connectionStatusText.setTextColor(ContextCompat.getColor(this, R.color.reconnecting_orange));
     }
 
     private void setDisconnected() {
