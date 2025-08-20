@@ -17,8 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:textSize="16sp"
-            android:text="Welcome to Encrypted Messenger" />
+            android:textSize="16sp" />
     </ScrollView>
 
     <!-- Input + Send button -->
@@ -33,7 +32,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Type a message"
+            android:autofillHints=""
+            android:hint="@string/hint_send_message"
             android:imeOptions="actionSend"
             android:inputType="text" />
 
@@ -41,6 +41,6 @@
             android:id="@+id/sendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Send" />
+            android:text="@string/send_button" />
     </LinearLayout>
 </LinearLayout>
