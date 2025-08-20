@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
 
             // Show error if key derivation fails
-            chatBox.setText(getString(R.string.error_key_derivation, e.getMessage()));
+            appendMessage(getString(R.string.error_key_derivation, e.getMessage()));
             return;
         }
 
@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception e) {
                 // Show error if encryption or sending fails
                 runOnUiThread(() ->
-                        chatBox.append("\n[!] Encrypt/send error: " + e.getMessage()));
+                        appendMessage("\n[!] Encrypt/send error: " + e.getMessage()));
             }
         }).start();
     }
@@ -228,8 +228,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Display decrypted message and scroll to bottom
                 runOnUiThread(() -> {
-                    chatBox.append("\n" + text);
-                    scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                    appendMessage(text);
                 });
             } catch (Exception ex) {
                 // Failed decryption, ignore silently
@@ -238,10 +237,19 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // Show non-protocol lines (server logs, etc.)
             runOnUiThread(() -> {
-                chatBox.append("\n" + line);
-                scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                appendMessage(line);
             });
         }
+    }
+
+    /**
+     * Appends a message to the chatBox and scrolls to the bottom automatically.
+     */
+    private void appendMessage(String message) {
+        runOnUiThread(() -> {
+            chatBox.append(message + "\n");
+            scrollView.post(() -> scrollView.fullScroll(ScrollView.FOCUS_DOWN));
+        });
     }
 
     /**
