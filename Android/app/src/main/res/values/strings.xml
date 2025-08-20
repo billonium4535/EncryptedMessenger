@@ -6,5 +6,6 @@
     <string name="hint_password">Password</string>
     <string name="connect_button">Connect</string>
     <string name="hint_send_message">Type a message</string>
-    <string name="send_button">Connect</string>
+    <string name="send_button">Send</string>
+    <string name="exit_chat">Exit Chat</string>
 </resources>
