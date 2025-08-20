@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView chatBox;
     private EditText inputBox;
     private ScrollView scrollView;
+    private TextView roomNameText;
+    private TextView connectionStatusText;
 
     // Networking
     private Socket socket;
@@ -66,11 +68,19 @@ public class MainActivity extends AppCompatActivity {
         String ROOM = intent.getStringExtra("ROOM");
         String PASSPHRASE = intent.getStringExtra("PASSWORD");
 
+        // Room name and connection
+        roomNameText = findViewById(R.id.roomNameText);
+        connectionStatusText = findViewById(R.id.connectionStatusText);
+
         // UI references
         chatBox = findViewById(R.id.chatBox);
         inputBox = findViewById(R.id.inputBox);
         Button sendButton = findViewById(R.id.sendButton);
         scrollView = findViewById(R.id.scrollView);
+
+        // Show room name
+        roomNameText.setText(ROOM);
+        setDisconnected();
 
         // Derive key
         try {
@@ -83,34 +93,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // Connect in a separate thread
-        new Thread(() -> {
-            try {
-                // Connect to server
-                socket = new Socket(SERVER_IP, SERVER_PORT);
+        // Start connection thread
+        new Thread(this::connectToServer).start();
 
-                // Set up writer
-                writer = new PrintWriter(socket.getOutputStream(), true);
-
-                // Set up reader
-                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-                // Update UI
-                runOnUiThread(() -> chatBox.append("\n[+] Connected to server"));
-
-                // Continuously read incoming messages
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Process incoming message
-                    handleIncoming(line);
-                }
-            } catch (Exception e) {
-                // Show connection error in UI
-                runOnUiThread(() -> chatBox.append("\n[!] Connection error: " + e.getMessage()));
-            }
-        }).start();
-
-        // Send button
+        // Send message on button click
         sendButton.setOnClickListener(v -> {
             String msg = inputBox.getText().toString().trim();
             if (!msg.isEmpty()) {
@@ -122,6 +108,55 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void connectToServer() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    // Connect to server
+                    socket = new Socket(SERVER_IP, SERVER_PORT);
+
+                    // Set up writer
+                    writer = new PrintWriter(socket.getOutputStream(), true);
+
+                    // Set up reader
+                    reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                    // Connected
+                    runOnUiThread(this::setConnected);
+
+                    // Continuously read incoming messages
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        // Process incoming message
+                        handleIncoming(line);
+                    }
+
+                    runOnUiThread(this::setDisconnected);
+                } catch (Exception e) {
+                    runOnUiThread(() -> {
+                        setDisconnected();
+                    });
+                }
+
+                // Wait 5s
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ignored) {}
+            }
+        }).start();
+    }
+
+    private void setConnected() {
+        connectionStatusText.setText("(connected)");
+        connectionStatusText.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+    }
+
+    private void setDisconnected() {
+        connectionStatusText.setText("(disconnected)");
+        connectionStatusText.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+    }
+
 
     /**
      * Encrypts a plaintext message and sends it to the server.
@@ -204,5 +239,6 @@ public class MainActivity extends AppCompatActivity {
             // Close network socket
             if (socket != null) socket.close();
         } catch (Exception ignored) {}
+        setDisconnected();
     }
 }
