@@ -4,7 +4,7 @@ from client_GUI import EncryptedMessengerGUI
 from Config.config_reader import config_parser
 
 
-GUI_TITLE = config_parser("../Config/client_config.ini", "GUI", "TITLE")
+GUI_TITLE = config_parser("./Config/client_config.ini", "GUI", "TITLE")
 BACKGROUND_COLOR = "#212121"
 
 

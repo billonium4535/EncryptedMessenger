@@ -6,9 +6,9 @@ from client import Client
 from Config.config_reader import config_parser
 from helper_functions import ToolTip
 
-SERVER_IP = config_parser("../Config/client_config.ini", "DEFAULT", "IP_ADDRESS")
-SERVER_PORT = config_parser("../Config/client_config.ini", "DEFAULT", "PORT")
-GUI_TITLE = config_parser("../Config/client_config.ini", "GUI", "TITLE")
+SERVER_IP = config_parser("./Config/client_config.ini", "DEFAULT", "IP_ADDRESS")
+SERVER_PORT = config_parser("./Config/client_config.ini", "DEFAULT", "PORT")
+GUI_TITLE = config_parser("./Config/client_config.ini", "GUI", "TITLE")
 
 
 class EncryptedMessengerGUI:
