@@ -34,13 +34,13 @@
             android:scrollHorizontally="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:text="Room Name" />
+            android:text="@string/room_name_placeholder" />
 
         <TextView
             android:id="@+id/connectionStatusText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="(disconnected)"
+            android:text="@string/connection_status_placeholder"
             android:textColor="@android:color/holo_red_dark"
             android:textStyle="italic" />
     </LinearLayout>

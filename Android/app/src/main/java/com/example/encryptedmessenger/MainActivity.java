@@ -1,6 +1,7 @@
 package com.example.encryptedmessenger;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView chatBox;
     private EditText inputBox;
     private ScrollView scrollView;
-    private TextView roomNameText;
     private TextView connectionStatusText;
 
     // Networking
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         String PASSPHRASE = intent.getStringExtra("PASSWORD");
 
         // Room name and connection
-        roomNameText = findViewById(R.id.roomNameText);
+        TextView roomNameText = findViewById(R.id.roomNameText);
         connectionStatusText = findViewById(R.id.connectionStatusText);
 
         // UI references
@@ -152,9 +152,7 @@ public class MainActivity extends AppCompatActivity {
 
                     runOnUiThread(this::setDisconnected);
                 } catch (Exception e) {
-                    runOnUiThread(() -> {
-                        setDisconnected();
-                    });
+                    runOnUiThread(this::setDisconnected);
                 }
 
                 // Wait 5s
@@ -166,13 +164,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setConnected() {
-        connectionStatusText.setText("(connected)");
-        connectionStatusText.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+        connectionStatusText.setText(R.string.connected_status);
+        connectionStatusText.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark));
     }
 
     private void setDisconnected() {
-        connectionStatusText.setText("(disconnected)");
-        connectionStatusText.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+        connectionStatusText.setText(R.string.disconnected_status);
+        connectionStatusText.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark));
     }
 
 
@@ -227,18 +225,14 @@ public class MainActivity extends AppCompatActivity {
                 String text = new String(pt, StandardCharsets.UTF_8);
 
                 // Display decrypted message and scroll to bottom
-                runOnUiThread(() -> {
-                    appendMessage(text);
-                });
+                runOnUiThread(() -> appendMessage(text));
             } catch (Exception ex) {
                 // Failed decryption, ignore silently
 
             }
         } else {
             // Show non-protocol lines (server logs, etc.)
-            runOnUiThread(() -> {
-                appendMessage(line);
-            });
+            runOnUiThread(() -> appendMessage(line));
         }
     }
 
