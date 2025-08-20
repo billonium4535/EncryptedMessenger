@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -75,12 +76,29 @@ public class MainActivity extends AppCompatActivity {
         // UI references
         chatBox = findViewById(R.id.chatBox);
         inputBox = findViewById(R.id.inputBox);
-        Button sendButton = findViewById(R.id.sendButton);
         scrollView = findViewById(R.id.scrollView);
+        Button sendButton = findViewById(R.id.sendButton);
+        ImageButton exitButton = findViewById(R.id.exitButton);
 
         // Show room name
         roomNameText.setText(ROOM);
         setDisconnected();
+
+        // Exit button
+        exitButton.setOnClickListener(v -> {
+            try {
+                if (socket != null && !socket.isClosed()) {
+                    // Close connection
+                    socket.close();
+                }
+            } catch (Exception ignored) {}
+
+            // Return to login screen
+            Intent backIntent = new Intent(MainActivity.this, LoginActivity.class);
+            backIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(backIntent);
+            finish();
+        });
 
         // Derive key
         try {
