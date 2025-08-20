@@ -38,11 +38,6 @@ public class MainActivity extends AppCompatActivity {
     // Key
     private byte[] key;
 
-    // User/session info
-    private String USERNAME;
-    private String ROOM;
-    private String PASSPHRASE;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
