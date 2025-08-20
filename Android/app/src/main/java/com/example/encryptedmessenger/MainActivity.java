@@ -18,14 +18,12 @@ import java.nio.charset.StandardCharsets;
 public class MainActivity extends AppCompatActivity {
 
     // Server config
-    private static final String SERVER_IP = "CHANGEME";
-    private static final int SERVER_PORT = CHANGEME;
+    String SERVER_IP = BuildConfig.SERVER_IP;
+    int SERVER_PORT = BuildConfig.SERVER_PORT;
 
     // Setup config
-    private static final String MESSAGE_PREFIX = "CHANGEME";
-    // private static final String ROOM = "CHANGEME";
-    // private static final String PASSPHRASE = "CHANGEME";
-    private static final String AAD_STR = "CHANGEME";
+    String MESSAGE_PREFIX = BuildConfig.MESSAGE_PREFIX;
+    String AAD_STR = BuildConfig.AAD_STR;
 
     // UI
     private TextView chatBox;
