@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 
@@ -22,6 +23,10 @@ public class LoginActivity extends AppCompatActivity {
     private EditText usernameInput;
     private EditText roomInput;
     private EditText passwordInput;
+
+    // Back button press time
+    private long backPressedTime = 0;
+    private static final int BACK_PRESS_INTERVAL = 2000;
 
     /**
      * Called when the activity is first created.
@@ -70,6 +75,20 @@ public class LoginActivity extends AppCompatActivity {
 
             // Close LoginActivity so user cannot go back
             finish();
+        });
+
+        // Handle back button press logic
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (backPressedTime + BACK_PRESS_INTERVAL > System.currentTimeMillis()) {
+                    // Exit app
+                    finishAffinity();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Press back again to exit", Toast.LENGTH_SHORT).show();
+                }
+                backPressedTime = System.currentTimeMillis();
+            }
         });
     }
 }
