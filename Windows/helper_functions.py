@@ -53,6 +53,11 @@ def input_validate(text: str, validation_type: str) -> bool:
             value = True
         else:
             value = False
+    if validation_type == "room":
+        if re.match(r'^[A-Za-z0-9]*$', text):
+            value = True
+        else:
+            value = False
 
     return value
 
