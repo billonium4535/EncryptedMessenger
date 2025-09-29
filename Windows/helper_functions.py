@@ -1,4 +1,5 @@
 import tkinter as tk
+import re
 
 
 class ToolTip:
@@ -33,3 +34,42 @@ class ToolTip:
         self.tooltip_window = None
         if tw:
             tw.destroy()
+
+
+def input_validate(text: str, validation_type: str) -> bool:
+    """
+    Validates an input against regex
+
+    Args:
+        text (str): The text.
+        validation_type (str): The validation type ('username').
+
+    Returns:
+        bool: If it passes the validation.
+    """
+    value = False
+    if validation_type == "username":
+        if re.match(r'^[A-Za-z0-9]*$', text):
+            value = True
+        else:
+            value = False
+
+    return value
+
+
+def length_validate(text: str, length: int) -> bool:
+    """
+    Validates an input against regex
+
+    Args:
+        text (str): The text.
+        length (int): The length of the text.
+
+    Returns:
+        bool: If it passes the validation.
+    """
+    if len(text) <= length:
+        value = True
+    else:
+        value = False
+    return value
