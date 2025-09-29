@@ -83,6 +83,14 @@ class LoginGUI:
             messagebox.showwarning("Invalid room", "room must be less than 20 characters")
             return
 
+        if not input_validate(password, "password"):
+            messagebox.showwarning("Invalid password", "password must contain only letters, numbers and special characters")
+            return
+
+        if not length_validate(password, 20):
+            messagebox.showwarning("Invalid password", "password must be less than 20 characters")
+            return
+
         # Hide login window
         self.root.withdraw()
         chat_window = tk.Toplevel()
