@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from client_GUI import EncryptedMessengerGUI
 from Config.config_reader import config_parser
+from helper_functions import input_validate, length_validate
 
 
 GUI_TITLE = config_parser("./Config/client_config.ini", "GUI", "TITLE")
@@ -65,6 +66,14 @@ class LoginGUI:
             messagebox.showwarning("Missing Info", "Please fill in all fields")
             return
 
+        if not input_validate(username, "username"):
+            messagebox.showwarning("Invalid Username", "Username must contain only letters and numbers")
+            return
+
+        if not length_validate(username, 20):
+            messagebox.showwarning("Invalid Username", "Username must be less than 20 characters")
+            return
+
         # Hide login window
         self.root.withdraw()
         chat_window = tk.Toplevel()
@@ -75,4 +84,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     login_gui = LoginGUI(root)
     root.mainloop()
-
