@@ -62,6 +62,7 @@ class LoginGUI:
         room = self.room_entry.get().strip()
         password = self.password_entry.get().strip()
 
+        # Validation
         if not username or not room or not password:
             messagebox.showwarning("Missing Info", "Please fill in all fields")
             return
@@ -72,6 +73,14 @@ class LoginGUI:
 
         if not length_validate(username, 20):
             messagebox.showwarning("Invalid Username", "Username must be less than 20 characters")
+            return
+
+        if not input_validate(room, "room"):
+            messagebox.showwarning("Invalid room", "room must contain only letters, numbers and special characters")
+            return
+
+        if not length_validate(room, 20):
+            messagebox.showwarning("Invalid room", "room must be less than 20 characters")
             return
 
         # Hide login window
