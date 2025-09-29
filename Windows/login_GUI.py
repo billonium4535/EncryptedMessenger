@@ -4,7 +4,6 @@ from client_GUI import EncryptedMessengerGUI
 from Config.config_reader import config_parser
 from helper_functions import input_validate, length_validate
 
-
 GUI_TITLE = config_parser("./Config/client_config.ini", "GUI", "TITLE")
 BACKGROUND_COLOR = "#212121"
 
@@ -44,10 +43,10 @@ class LoginGUI:
                         relief="flat",
                         borderwidth=0,
                         foreground="#3d3d3d",
-                        background=BACKGROUND_COLOR,)
+                        background=BACKGROUND_COLOR, )
 
         style.map("Rounded.TButton",
-                  background=[("active", BACKGROUND_COLOR, )])
+                  background=[("active", BACKGROUND_COLOR,)])
 
         self.connect_button = ttk.Button(root, text="Connect", style="Rounded.TButton", command=self.connect)
         self.connect_button.pack(side="bottom", pady=20, ipadx=20)
@@ -63,35 +62,47 @@ class LoginGUI:
         password = self.password_entry.get().strip()
 
         # Validation
-        if not username or not room or not password:
+        fields = [
+            {
+                "name": "username",
+                "value": username,
+                "validators": [
+                    (lambda v, _: input_validate(v, "username"), "Username must contain only letters and numbers"),
+                    (lambda v, _: length_validate(v, 20), "Username must be less than 20 characters")
+                ]
+            },
+            {
+                "name": "room",
+                "value": room,
+                "validators": [
+                    (lambda v, _: input_validate(v, "room"),
+                     "Room must contain only letters, numbers and special characters"),
+                    (lambda v, _: length_validate(v, 20), "Room must be less than 20 characters")
+                ]
+            },
+            {
+                "name": "password",
+                "value": password,
+                "validators": [
+                    (lambda v, _: input_validate(v, "password"),
+                     "Password must contain only letters, numbers and special characters"),
+                    (lambda v, _: length_validate(v, 20), "Password must be less than 20 characters")
+                ]
+            }
+        ]
+
+        # check for empty fields
+        if not all(f["value"] for f in fields):
             messagebox.showwarning("Missing Info", "Please fill in all fields")
             return
 
-        if not input_validate(username, "username"):
-            messagebox.showwarning("Invalid Username", "Username must contain only letters and numbers")
-            return
+        # run validations
+        for field in fields:
+            for validator, error_msg in field["validators"]:
+                if not validator(field["value"], field["name"]):
+                    messagebox.showwarning(f"Invalid {field['name'].capitalize()}", error_msg)
+                    return
 
-        if not length_validate(username, 20):
-            messagebox.showwarning("Invalid Username", "Username must be less than 20 characters")
-            return
-
-        if not input_validate(room, "room"):
-            messagebox.showwarning("Invalid room", "room must contain only letters, numbers and special characters")
-            return
-
-        if not length_validate(room, 20):
-            messagebox.showwarning("Invalid room", "room must be less than 20 characters")
-            return
-
-        if not input_validate(password, "password"):
-            messagebox.showwarning("Invalid password", "password must contain only letters, numbers and special characters")
-            return
-
-        if not length_validate(password, 20):
-            messagebox.showwarning("Invalid password", "password must be less than 20 characters")
-            return
-
-        # Hide login window
         self.root.withdraw()
         chat_window = tk.Toplevel()
         EncryptedMessengerGUI(chat_window, username, room, password, on_close=self.root.deiconify)
