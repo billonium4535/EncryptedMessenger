@@ -1,5 +1,6 @@
 package com.example.encryptedmessenger;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -124,6 +125,24 @@ public class MainActivity extends AppCompatActivity {
 
                 // Clear input box
                 inputBox.setText("");
+            }
+        });
+
+        // Handle system back press using OnBackPressedDispatcher
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                try {
+                    if (socket != null && !socket.isClosed()) {
+                        socket.close();
+                    }
+                } catch (Exception ignored) {}
+
+                // Go back to login
+                Intent backIntent = new Intent(MainActivity.this, LoginActivity.class);
+                backIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(backIntent);
+                finish();
             }
         });
     }
