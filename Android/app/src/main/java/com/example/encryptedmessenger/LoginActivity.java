@@ -74,6 +74,11 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
+            if (!ValidationHelper.inputValidate(password, "password") ||
+                    !ValidationHelper.lengthValidate(password, 20)) {
+                Toast.makeText(this, getString(R.string.error_invalid_password), Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             // Create an intent to start MainActivity with login details
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
