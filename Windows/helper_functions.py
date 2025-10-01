@@ -42,7 +42,7 @@ def input_validate(text: str, validation_type: str) -> bool:
 
     Args:
         text (str): The text.
-        validation_type (str): The validation type ('username').
+        validation_type (str): The validation type ('username', 'room', or 'password').
 
     Returns:
         bool: If it passes the validation.
@@ -69,7 +69,7 @@ def input_validate(text: str, validation_type: str) -> bool:
 
 def length_validate(text: str, length: int) -> bool:
     """
-    Validates an input against regex
+    Validates an input against the length
 
     Args:
         text (str): The text.
