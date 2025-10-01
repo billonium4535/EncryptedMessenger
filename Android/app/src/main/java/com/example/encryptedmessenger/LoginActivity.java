@@ -56,11 +56,9 @@ public class LoginActivity extends AppCompatActivity {
             String room = roomInput.getText().toString().trim();
             String password = passwordInput.getText().toString().trim();
 
-            // Validate that all fields are filled
+            // Validation
             if (username.isEmpty() || room.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
-
-                // Stop further execution if validation fails
+                Toast.makeText(this, getString(R.string.error_all_fields_required), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -85,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                     // Exit app
                     finishAffinity();
                 } else {
-                    Toast.makeText(LoginActivity.this, "Press back again to exit", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, getString(R.string.toast_press_back_again), Toast.LENGTH_SHORT).show();
                 }
                 backPressedTime = System.currentTimeMillis();
             }
