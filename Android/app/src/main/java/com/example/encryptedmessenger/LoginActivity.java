@@ -68,6 +68,13 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
+            if (!ValidationHelper.inputValidate(room, "room") ||
+                    !ValidationHelper.lengthValidate(room, 20)) {
+                Toast.makeText(this, getString(R.string.error_invalid_room), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+
             // Create an intent to start MainActivity with login details
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra("USERNAME", username);
