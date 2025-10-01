@@ -13,4 +13,9 @@
     <string name="reconnecting_status">(reconnecting)</string>
     <string name="room_name_placeholder">Room Name</string>
     <string name="connection_status_placeholder">(disconnected)</string>
+    <string name="error_all_fields_required">All fields are required</string>
+    <string name="error_invalid_username">Invalid username (only letters/numbers, max 20 chars)</string>
+    <string name="error_invalid_room">Invalid room (only letters/numbers, max 20 chars)</string>
+    <string name="error_invalid_password">Invalid password (only letters/numbers, max 20 chars)</string>
+    <string name="toast_press_back_again">Press back again to exit</string>
 </resources>
