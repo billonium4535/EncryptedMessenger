@@ -5,6 +5,7 @@
 Android/.gradle
 Android/build
 */build/
+Android/app/build.gradle.kts
 
 # Local config
 Android/local.properties
