@@ -29,12 +29,12 @@ import java.nio.charset.StandardCharsets;
 public class MainActivity extends AppCompatActivity {
 
     // Server config pulled from build settings
-    String SERVER_IP = BuildConfig.SERVER_IP;
-    int SERVER_PORT = BuildConfig.SERVER_PORT;
+    String SERVER_IP = AppConfig.getServerIp();
+    int SERVER_PORT = AppConfig.getServerPort();
 
     // Setup config pulled from build settings
-    String MESSAGE_PREFIX = BuildConfig.MESSAGE_PREFIX;
-    String AAD_STR = BuildConfig.AAD_STR;
+    String MESSAGE_PREFIX = AppConfig.getMessagePrefix();
+    String AAD_STR = AppConfig.getAadStr();
 
     // UI
     private TextView chatBox;

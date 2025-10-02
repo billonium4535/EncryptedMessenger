@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
 }
@@ -16,13 +18,37 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
+    // Signing configuration
+    val signingProps = Properties().apply {
+        val file = rootProject.file("app/signing.properties")
+        if (file.exists()) load(file.inputStream())
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = signingProps["RELEASE_STORE_FILE"]?.let { file(it as String) }
+            storePassword = signingProps["RELEASE_STORE_PASSWORD"] as? String
+            keyAlias = signingProps["RELEASE_KEY_ALIAS"] as? String
+            keyPassword = signingProps["RELEASE_KEY_PASSWORD"] as? String
+        }
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
+        }
+        debug {
+
         }
     }
     compileOptions {
