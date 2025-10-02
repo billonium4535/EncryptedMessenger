@@ -16,6 +16,7 @@ def handle_client(connection, address):
             if not data:
                 break
             broadcast(data, connection)
+            # print(f"Client {address} sent {data}")
         except:
             break
     print("Client {} disconnected".format(address))
@@ -25,20 +26,17 @@ def handle_client(connection, address):
 
 def broadcast(data, connection):
     for client in clients:
-        # if client != connection:
         try:
             client.send(data)
         except:
             client.close()
             clients.remove(client)
-        # else:
-        #     print(f"Client {client} sent {data}")
 
 
 def main():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((SERVER_IP, SERVER_PORT))
-    server.listen(2)
+    server.listen(2)  # Change the number of unaccepted connections that the system will allow before refusing new connections (https://docs.python.org/3.13/library/socket.html#socket.socket.listen)
     print("Server listening on {}:{}".format(SERVER_IP, SERVER_PORT))
 
     while True:
