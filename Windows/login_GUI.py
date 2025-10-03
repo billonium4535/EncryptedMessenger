@@ -4,17 +4,37 @@ from client_GUI import EncryptedMessengerGUI
 from Config.config_reader import config_parser
 from helper_functions import input_validate, length_validate
 
+# Read the GUI title from the configuration file
 GUI_TITLE = config_parser("./Config/client_config.ini", "GUI", "TITLE")
+
+# Define a global background color constant for consistent styling
 BACKGROUND_COLOR = "#212121"
 
 
 class LoginGUI:
+    """
+    Login GUI class for handling user login before entering the chat room.
+
+    Attributes:
+        root (tk.Tk): The root Tkinter window.
+        username_entry (tk.Entry): Entry widget for the username.
+        room_entry (tk.Entry): Entry widget for the room.
+        password_entry (tk.Entry): Entry widget for the password.
+        connect_button (ttk.Button): Button to attempt connecting to the chat.
+    """
     def __init__(self, root):
+        """
+        Initialise the Login GUI window and set up widgets.
+
+        Args:
+            root (tk.Tk): The main Tkinter root window.
+        """
         self.root = root
         self.root.title(f"Login - {GUI_TITLE}")
         self.root.resizable(False, False)
         self.root.geometry("300x350")
         self.root.configure(bg=BACKGROUND_COLOR)
+        # Clicking outside entries unfocuses them
         self.root.bind("<Button-1>", self.unfocus_all)
 
         # Title
@@ -48,15 +68,26 @@ class LoginGUI:
         style.map("Rounded.TButton",
                   background=[("active", BACKGROUND_COLOR,)])
 
+        # Connect button
         self.connect_button = ttk.Button(root, text="Connect", style="Rounded.TButton", command=self.connect)
         self.connect_button.pack(side="bottom", pady=20, ipadx=20)
 
     def unfocus_all(self, event):
+        """
+        Unfocus any Entry widgets when clicking elsewhere in the window.
+
+        Args:
+            event: The Tkinter event triggered by a mouse click.
+        """
         widget = event.widget
         if not isinstance(widget, tk.Entry):
             self.root.focus()
 
     def connect(self):
+        """
+        Attempt to connect to the chat system after validating input fields.
+        Shows warning messages if validation fails.
+        """
         username = self.username_entry.get().strip()
         room = self.room_entry.get().strip()
         password = self.password_entry.get().strip()

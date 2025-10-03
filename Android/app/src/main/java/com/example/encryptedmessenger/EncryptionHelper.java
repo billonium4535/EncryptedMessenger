@@ -94,7 +94,7 @@ public final class EncryptionHelper {
         ChaCha20Poly1305 aead = new ChaCha20Poly1305();
         AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce, aad);
 
-        // Initialize AEAD for encryption
+        // Initialise AEAD for encryption
         aead.init(true, params);
 
         byte[] out = new byte[aead.getOutputSize(plaintext.length)];
@@ -135,7 +135,7 @@ public final class EncryptionHelper {
         ChaCha20Poly1305 aead = new ChaCha20Poly1305();
         AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce, aad);
 
-        // Initialize AEAD for decryption
+        // Initialise AEAD for decryption
         aead.init(false, params);
 
         byte[] out = new byte[aead.getOutputSize(ct.length)];
