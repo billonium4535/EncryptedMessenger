@@ -52,6 +52,9 @@ public class LoginActivity extends AppCompatActivity {
         passwordInput = findViewById(R.id.passwordInput);
         Button connectButton = findViewById(R.id.connectButton);
 
+        // Load saved details
+        loadSavedInputs();
+
         // Set listener for the connect button
         connectButton.setOnClickListener(v -> {
             // Retrieve user inputs and trim whitespace
@@ -83,6 +86,9 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
+            // Save details
+            saveInputs(username, room, password);
+
             // Create an intent to start MainActivity with login details
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra("USERNAME", username);
@@ -109,5 +115,27 @@ public class LoginActivity extends AppCompatActivity {
                 backPressedTime = System.currentTimeMillis();
             }
         });
+    }
+
+    /**
+     * Save login inputs
+     */
+    private void saveInputs(String username, String room, String password) {
+        getSharedPreferences("LoginPrefs", MODE_PRIVATE)
+                .edit()
+                .putString("username", username)
+                .putString("room", room)
+                .putString("password", password)
+                .apply();
+    }
+
+    /**
+     * Load saved inputs
+     */
+    private void loadSavedInputs() {
+        var prefs = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+        usernameInput.setText(prefs.getString("username", ""));
+        roomInput.setText(prefs.getString("room", ""));
+        passwordInput.setText(prefs.getString("password", ""));
     }
 }
