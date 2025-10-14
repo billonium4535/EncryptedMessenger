@@ -49,9 +49,10 @@ public class MessageListenerService extends Service {
                 if ("NEW_MESSAGE_RECEIVED".equals(intent.getAction())) {
                     String message = intent.getStringExtra("message");
                     String room = intent.getStringExtra("room");
+                    boolean isSystemMessage = intent.getBooleanExtra("isSystemMessage", false);
 
-                    // Only notify if chat is not visible
-                    if (!isChatVisible) {
+                    // Only notify if chat is not visible and not system messages
+                    if (!isChatVisible && !isSystemMessage) {
                         showNewMessageNotification(room, message);
                     }
                 }
