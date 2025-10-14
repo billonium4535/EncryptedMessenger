@@ -59,9 +59,25 @@
             android:hint="@string/hint_password"
             android:inputType="textPassword"
             android:importantForAutofill="yes" />
+
+        <CheckBox
+            android:id="@+id/saveCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/save_details" />
     </LinearLayout>
 
-    <!-- Bottom button -->
+    <Button
+        android:id="@+id/savedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/saved_details"
+        android:layout_marginBottom="58dp"
+        app:layout_constraintBottom_toTopOf="@id/connectButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Connect button -->
     <Button
         android:id="@+id/connectButton"
         android:layout_width="match_parent"
