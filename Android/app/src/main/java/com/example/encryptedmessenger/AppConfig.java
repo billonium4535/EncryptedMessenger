@@ -38,4 +38,28 @@ public class AppConfig {
     public static String getSystemTag() {
         return props.getProperty("SYSTEM_TAG");
     }
+
+    public static String getDBName() {
+        return props.getProperty("DB_NAME");
+    }
+
+    public static String getDBVersion() {
+        return props.getProperty("DB_VERSION");
+    }
+
+    public static String getTableName() {
+        return props.getProperty("TABLE_NAME");
+    }
+
+    public static String getColID() {
+        return props.getProperty("COL_ID");
+    }
+
+    public static String getColRoom() {
+        return props.getProperty("COL_ROOM");
+    }
+
+    public static String getColPassword() {
+        return props.getProperty("COL_PASSWORD");
+    }
 }
