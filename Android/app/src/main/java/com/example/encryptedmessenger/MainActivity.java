@@ -6,7 +6,13 @@ import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     // Setup config pulled from build settings
     String MESSAGE_PREFIX = AppConfig.getMessagePrefix();
     String AAD_STR = AppConfig.getAadStr();
+    String SYSTEM_TAG = AppConfig.getSystemTag();
 
     // UI
     private TextView chatBox;
@@ -57,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     // Vars
     private String ROOM;
     private String USERNAME;
+    private volatile boolean isRunning = true;
 
     @Override
     protected void onResume() {
@@ -122,7 +130,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Exit button
         exitButton.setOnClickListener(v -> {
+            isRunning = false;
             try {
+                if (writer != null && key != null && socket != null && socket.isConnected()) {
+                    // Send leave message
+                    sendSystemMessage(USERNAME + " has left the chat room");
+                    Thread.sleep(100);
+                }
+
                 if (socket != null && !socket.isClosed()) {
                     // Close connection
                     socket.close();
@@ -166,24 +181,30 @@ public class MainActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                try {
-                    if (socket != null && !socket.isClosed()) {
-                        socket.close();
-                    }
-                } catch (Exception ignored) {}
+                isRunning = false;
+                new Thread(() -> {
+                    try {
+                        if (writer != null && key != null && socket != null && socket.isConnected()) {
+                            sendSystemMessage(USERNAME + " has left the chat room");
+                            Thread.sleep(100);
+                        }
+                        if (socket != null && !socket.isClosed()) socket.close();
+                    } catch (Exception ignored) {}
 
-                // Go back to login
-                Intent backIntent = new Intent(MainActivity.this, LoginActivity.class);
-                backIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(backIntent);
-                finish();
+                    runOnUiThread(() -> {
+                        Intent backIntent = new Intent(MainActivity.this, LoginActivity.class);
+                        backIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(backIntent);
+                        finish();
+                    });
+                }).start();
             }
         });
     }
 
     private void connectToServer() {
         new Thread(() -> {
-            while (true) {
+            while (isRunning) {
                 try {
                     Log.d("DEBUG", "Connecting to " + SERVER_IP + ":" + SERVER_PORT);
                     // Show user reconnecting
@@ -202,6 +223,9 @@ public class MainActivity extends AppCompatActivity {
                     // Connected
                     runOnUiThread(this::setConnected);
 
+                    // Send join message
+                    sendSystemMessage(USERNAME + " has entered the chat room");
+
                     // Continuously read incoming messages
                     String line;
                     while ((line = reader.readLine()) != null) {
@@ -215,9 +239,11 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // Wait 5s
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ignored) {}
+                if (isRunning) {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ignored) {}
+                }
             }
         }).start();
     }
@@ -267,6 +293,20 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
+
+    /**
+     * Sends a system message.
+     * <p>
+     * Sends a system message with a unique prefix that prevents user spoofing.
+     * </p>
+     *
+     * @param content The system message text
+     */
+    private void sendSystemMessage(String content) {
+        sendEncrypted(SYSTEM_TAG + content);
+    }
+
+
     /**
      * Handles incoming messages from the server.
      * <p>
@@ -288,13 +328,22 @@ public class MainActivity extends AppCompatActivity {
                 );
                 String text = new String(pt, StandardCharsets.UTF_8);
 
+                boolean isSystemMessage = text.startsWith(SYSTEM_TAG);
+                if (isSystemMessage) {
+                    text = text.substring(SYSTEM_TAG.length());
+                }
+
+                // Broadcast message
                 Intent msgIntent = new Intent("NEW_MESSAGE_RECEIVED");
                 msgIntent.putExtra("message", text);
                 msgIntent.putExtra("room", ROOM);
+                msgIntent.putExtra("isSystemMessage", isSystemMessage);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(msgIntent);
 
                 // Display decrypted message and scroll to bottom
-                runOnUiThread(() -> appendMessage(text));
+                String finalText = text;
+                boolean finalIsSystemMessage = isSystemMessage;
+                runOnUiThread(() -> appendMessage(finalText, finalIsSystemMessage));
             } catch (Exception ex) {
                 // Failed decryption, ignore silently
 
@@ -304,6 +353,40 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> appendMessage(line));
         }
     }
+
+
+    /**
+     * Appends a message to the chatBox and scrolls to the bottom automatically.
+     */
+    private void appendMessage(String message, boolean isSystem) {
+        runOnUiThread(() -> {
+            SpannableString styledMessage;
+
+            if (isSystem) {
+                // System message
+                styledMessage = new SpannableString("*" + message + "*\n");
+                styledMessage.setSpan(
+                        new ForegroundColorSpan(Color.GRAY),
+                        0,
+                        styledMessage.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                );
+                styledMessage.setSpan(
+                        new StyleSpan(Typeface.ITALIC),
+                        0,
+                        styledMessage.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                );
+            } else {
+                // Normal message
+                styledMessage = new SpannableString(message + "\n");
+            }
+
+            chatBox.append(styledMessage);
+            scrollView.post(() -> scrollView.fullScroll(ScrollView.FOCUS_DOWN));
+        });
+    }
+
 
     /**
      * Appends a message to the chatBox and scrolls to the bottom automatically.
@@ -315,6 +398,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     /**
      * Called when the activity is destroyed.
      * <p>
@@ -324,10 +408,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        // Stop reconnect loop
+        isRunning = false;
+
         try {
+            // Send leave message
+            if (writer != null && key != null && socket != null && socket.isConnected()) {
+                sendSystemMessage(USERNAME + " has left the chat room");
+
+                // Delay to make sure it sends
+                Thread.sleep(100);
+            }
+
             // Close network socket
-            if (socket != null) socket.close();
+            if (socket != null && !socket.isClosed()) socket.close();
         } catch (Exception ignored) {}
+
         setDisconnected();
     }
 }
