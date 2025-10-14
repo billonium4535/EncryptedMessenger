@@ -18,4 +18,6 @@
     <string name="error_invalid_room">Invalid room (only letters/numbers, max 20 chars)</string>
     <string name="error_invalid_password">Invalid password (only letters/numbers, max 20 chars)</string>
     <string name="toast_press_back_again">Press back again to exit</string>
+    <string name="save_details">Save Details</string>
+    <string name="saved_details">Saved Rooms</string>
 </resources>
