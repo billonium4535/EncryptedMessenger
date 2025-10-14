@@ -1,6 +1,8 @@
 package com.example.encryptedmessenger;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -8,6 +10,8 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 
 /**
@@ -45,6 +49,15 @@ public class LoginActivity extends AppCompatActivity {
 
         // Set layout for login screen
         setContentView(R.layout.activity_login);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        1001);
+            }
+        }
 
         // Initialise UI
         usernameInput = findViewById(R.id.usernameInput);
@@ -95,6 +108,10 @@ public class LoginActivity extends AppCompatActivity {
             intent.putExtra("ROOM", room);
             intent.putExtra("PASSWORD", password);
 
+            // Start background message listener
+            Intent serviceIntent = new Intent(LoginActivity.this, MessageListenerService.class);
+            ContextCompat.startForegroundService(LoginActivity.this, serviceIntent);
+
             // Launch MainActivity
             startActivity(intent);
 
@@ -137,5 +154,17 @@ public class LoginActivity extends AppCompatActivity {
         usernameInput.setText(prefs.getString("username", ""));
         roomInput.setText(prefs.getString("room", ""));
         passwordInput.setText(prefs.getString("password", ""));
+    }
+
+    /**
+     * TODO
+     * Create a logout function and button
+     */
+    private void logout() {
+        // Clear details
+        getSharedPreferences("LoginPrefs", MODE_PRIVATE).edit().clear().apply();
+
+        // Stop notification service
+        stopService(new Intent(this, MessageListenerService.class));
     }
 }

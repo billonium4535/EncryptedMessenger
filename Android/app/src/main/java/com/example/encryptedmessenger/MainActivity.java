@@ -3,9 +3,11 @@ package com.example.encryptedmessenger;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -52,6 +54,22 @@ public class MainActivity extends AppCompatActivity {
     // Key
     private byte[] key;
 
+    // Vars
+    private String ROOM;
+    private String USERNAME;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MessageListenerService.isChatVisible = true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MessageListenerService.isChatVisible = false;
+    }
+
     /**
      * Called when the activity is first created.
      * <p>
@@ -65,11 +83,27 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get login data from Intent extras
+        // Get login data from Intent extras or SharedPreferences fallback
         Intent intent = getIntent();
-        String USERNAME = intent.getStringExtra("USERNAME");
-        String ROOM = intent.getStringExtra("ROOM");
+        var prefs = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+
+        USERNAME = intent.getStringExtra("USERNAME");
+        ROOM = intent.getStringExtra("ROOM");
         String PASSPHRASE = intent.getStringExtra("PASSWORD");
+
+        // If activity launched from notification, fallback to saved login details
+        if (USERNAME == null || ROOM == null || PASSPHRASE == null) {
+            USERNAME = prefs.getString("username", null);
+            ROOM = prefs.getString("room", null);
+            PASSPHRASE = prefs.getString("password", null);
+        }
+
+        // If still missing something, fail
+        if (USERNAME == null || ROOM == null || PASSPHRASE == null) {
+            finish(); // nothing usable, go back to login
+            startActivity(new Intent(this, LoginActivity.class));
+            return;
+        }
 
         // Room name and connection
         TextView roomNameText = findViewById(R.id.roomNameText);
@@ -151,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
         new Thread(() -> {
             while (true) {
                 try {
+                    Log.d("DEBUG", "Connecting to " + SERVER_IP + ":" + SERVER_PORT);
                     // Show user reconnecting
                     runOnUiThread(this::setReconnecting);
 
@@ -252,6 +287,11 @@ public class MainActivity extends AppCompatActivity {
                         AAD_STR.getBytes(StandardCharsets.UTF_8)
                 );
                 String text = new String(pt, StandardCharsets.UTF_8);
+
+                Intent msgIntent = new Intent("NEW_MESSAGE_RECEIVED");
+                msgIntent.putExtra("message", text);
+                msgIntent.putExtra("room", ROOM);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(msgIntent);
 
                 // Display decrypted message and scroll to bottom
                 runOnUiThread(() -> appendMessage(text));
