@@ -45,6 +45,38 @@
             android:textStyle="italic" />
     </LinearLayout>
 
+    <!-- Heartbeat -->
+    <LinearLayout
+        android:id="@+id/userCountLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <View
+            android:id="@+id/onlineDot"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginEnd="8dp"
+            android:background="@android:color/holo_green_dark"
+            android:layout_gravity="center_vertical"
+            android:backgroundTint="@android:color/holo_green_dark"
+            android:backgroundTintMode="src_in"
+            android:clipToOutline="true"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/userCountText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 users online"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"/>
+    </LinearLayout>
+
     <!-- Divider -->
     <View
         android:layout_width="match_parent"

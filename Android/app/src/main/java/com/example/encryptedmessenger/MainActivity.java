@@ -14,9 +14,11 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -64,7 +66,12 @@ public class MainActivity extends AppCompatActivity {
     // Vars
     private String ROOM;
     private String USERNAME;
+    private String PASSPHRASE;
     private volatile boolean isRunning = true;
+
+    // Heartbeat
+    private TextView userCountText;
+    private View onlineDot;
 
     @Override
     protected void onResume() {
@@ -97,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
         USERNAME = intent.getStringExtra("USERNAME");
         ROOM = intent.getStringExtra("ROOM");
-        String PASSPHRASE = intent.getStringExtra("PASSWORD");
+        PASSPHRASE = intent.getStringExtra("PASSWORD");
 
         // If activity launched from notification, fallback to saved login details
         if (USERNAME == null || ROOM == null || PASSPHRASE == null) {
@@ -116,6 +123,10 @@ public class MainActivity extends AppCompatActivity {
         // Room name and connection
         TextView roomNameText = findViewById(R.id.roomNameText);
         connectionStatusText = findViewById(R.id.connectionStatusText);
+
+        // Heartbeat
+        userCountText = findViewById(R.id.userCountText);
+        onlineDot = findViewById(R.id.onlineDot);
 
         // UI references
         chatBox = findViewById(R.id.chatBox);
@@ -226,6 +237,18 @@ public class MainActivity extends AppCompatActivity {
                     // Send join message
                     sendSystemMessage(USERNAME + " has entered the chat room");
 
+                    // Heartbeat
+                    new Thread(() -> {
+                        try {
+                            while (socket != null && socket.isConnected() && isRunning) {
+                                String heartbeat = "__HEARTBEAT__" +
+                                        "{\"room\":\"" + ROOM + "\",\"password\":\"" + PASSPHRASE + "\"}";
+                                writer.println(heartbeat);
+                                Thread.sleep(5000);
+                            }
+                        } catch (Exception ignored) {}
+                    }).start();
+
                     // Continuously read incoming messages
                     String line;
                     while ((line = reader.readLine()) != null) {
@@ -316,6 +339,20 @@ public class MainActivity extends AppCompatActivity {
      * @param line The raw line received from the server.
      */
     private void handleIncoming(String line) {
+        // Heartbeat
+        if (line.startsWith("__COUNT__")) {
+            try {
+                int count = Integer.parseInt(line.replace("__COUNT__", "").trim());
+                runOnUiThread(() -> {
+                    userCountText.setText(count + " users online");             // TODO
+                    onlineDot.setBackgroundColor(
+                            count > 0 ? Color.GREEN : Color.GRAY
+                    );
+                });
+            } catch (Exception ignored) {}
+            return;
+        }
+
         if (line.startsWith(MESSAGE_PREFIX)) {
             // Extract Base64 payload from protocol message
             String payloadB64 = line.substring(MESSAGE_PREFIX.length());
