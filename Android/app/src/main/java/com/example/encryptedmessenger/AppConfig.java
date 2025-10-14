@@ -34,4 +34,8 @@ public class AppConfig {
     public static String getAadStr() {
         return props.getProperty("AAD_STR");
     }
+
+    public static String getSystemTag() {
+        return props.getProperty("SYSTEM_TAG");
+    }
 }
