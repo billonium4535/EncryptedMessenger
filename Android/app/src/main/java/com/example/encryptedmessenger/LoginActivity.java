@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -59,10 +60,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
 
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+
         // Initialise UI
         usernameInput = findViewById(R.id.usernameInput);
         roomInput = findViewById(R.id.roomInput);
         passwordInput = findViewById(R.id.passwordInput);
+        CheckBox saveCheckBox = findViewById(R.id.saveCheckBox);
+        Button savedButton = findViewById(R.id.savedButton);
         Button connectButton = findViewById(R.id.connectButton);
 
         // Load saved details
@@ -74,6 +79,10 @@ public class LoginActivity extends AppCompatActivity {
             String username = usernameInput.getText().toString().trim();
             String room = roomInput.getText().toString().trim();
             String password = passwordInput.getText().toString().trim();
+
+            if (saveCheckBox.isChecked()) {
+                dbHelper.insertLogin(room, password);
+            }
 
             // Validation
             if (username.isEmpty() || room.isEmpty() || password.isEmpty()) {
@@ -117,6 +126,13 @@ public class LoginActivity extends AppCompatActivity {
 
             // Close LoginActivity so user cannot go back
             finish();
+        });
+
+        // Handle saved rooms button press login
+        savedButton.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, SavedLoginsActivity.class);
+            intent.putExtra("USERNAME", usernameInput.getText().toString());
+            startActivity(intent);
         });
 
         // Handle back button press logic
