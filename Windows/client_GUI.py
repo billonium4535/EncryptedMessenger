@@ -10,6 +10,7 @@ from helper_functions import ToolTip
 SERVER_IP = config_parser("./Config/client_config.ini", "DEFAULT", "IP_ADDRESS")
 SERVER_PORT = config_parser("./Config/client_config.ini", "DEFAULT", "PORT")
 GUI_TITLE = config_parser("./Config/client_config.ini", "GUI", "TITLE")
+SYSTEM_TAG = config_parser("./Config/client_config.ini", "DEFAULT", "SYSTEM_TAG")
 
 
 class EncryptedMessengerGUI:
@@ -73,6 +74,10 @@ class EncryptedMessengerGUI:
         self.chat_display = scrolledtext.ScrolledText(root, wrap=tk.WORD, state="disabled", height=20, width=60)
         self.chat_display.pack(padx=10, pady=10, fill="both", expand=True)
 
+        # Tag styling for message types
+        self.chat_display.tag_config("system", foreground="grey", font=("Arial", 10, "italic"))
+        self.chat_display.tag_config("normal", foreground="black", font=("Arial", 10, "normal"))
+
         # Input box
         self.entry = tk.Entry(root, width=60)
         self.entry.pack(padx=10, pady=(0, 10), fill="x")
@@ -124,7 +129,13 @@ class EncryptedMessengerGUI:
             message (str): The message to be displayed.
         """
         self.chat_display.config(state="normal")
-        self.chat_display.insert(tk.END, message + "\n")
+
+        if message.startswith(SYSTEM_TAG):
+            text = message[len(SYSTEM_TAG):].strip()
+            self.chat_display.insert(tk.END, f"*{text}*\n", "system")
+        else:
+            self.chat_display.insert(tk.END, message + "\n", "normal")
+
         self.chat_display.see(tk.END)
         self.chat_display.config(state="disabled")
 

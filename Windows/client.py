@@ -10,6 +10,7 @@ from encryption_utils import derive_room_key, encrypt, decrypt
 SERVER_IP = config_parser("./Config/client_config.ini", "DEFAULT", "IP_ADDRESS")
 SERVER_PORT = config_parser("./Config/client_config.ini", "DEFAULT", "PORT")
 MESSAGE_PREFIX = config_parser("./Config/client_config.ini", "DEFAULT", "MESSAGE_PREFIX").encode("utf-8")
+SYSTEM_TAG = config_parser("./Config/client_config.ini", "DEFAULT", "SYSTEM_TAG")
 
 
 class Client:
@@ -42,6 +43,8 @@ class Client:
         self.message_callback = message_callback
         self.status_callback = status_callback
         self._stop_reconnect = False
+        self._first_connection = True
+        self._first_connection_leave = True
 
     def send_line(self, prefix: bytes, payload_b64: bytes):
         """
@@ -84,7 +87,12 @@ class Client:
                         try:
                             # Attempt to decrypt and decode message
                             plaintext = decrypt(self.key, payload_b64).decode("utf-8", errors="replace")
-                            self.message_callback(plaintext)
+
+                            # if plaintext.startswith(SYSTEM_TAG):
+                            #     system_message = plaintext.strip()
+                            #     self.message_callback(f"*{system_message}*")
+                            # else:
+                            self.message_callback(plaintext.strip())
                         except Exception:
                             # Ignore decryption failures
                             pass
@@ -124,6 +132,11 @@ class Client:
                     threading.Thread(target=self.receiver, daemon=True).start()
                     if self.status_callback:
                         self.status_callback("connected")
+
+                    if self._first_connection:
+                        self.send_system_message(f"{self.name} has entered the chat room")
+                        self._first_connection = False
+                        self._first_connection_leave = True
                     # Exit loop if successfully connected
                     break
                 except Exception:
@@ -145,13 +158,30 @@ class Client:
         b64_payload = encrypt(self.key, plaintext)
         self.send_line(MESSAGE_PREFIX, b64_payload)
 
+    def send_system_message(self, content: str):
+        """
+        Encrypt and send a system message.
+        Args:
+            content (str): Content to send.
+        """
+        plaintext = f"{SYSTEM_TAG}{content}".encode("utf-8")
+        b64_payload = encrypt(self.key, plaintext)
+        self.send_line(MESSAGE_PREFIX, b64_payload)
+
     def disconnect(self):
         """Disconnect from the server and stop reconnection attempts."""
         self._stop_reconnect = True
         try:
-            if self.socket:
-                self.socket.shutdown(socket.SHUT_RDWR)
-                self.socket.close()
+            if self._first_connection_leave:
+                self.send_system_message(f"{self.name} has left the chat room")
+                time.sleep(0.1)
         except Exception:
-            # Ignore errors during shutdown
             pass
+        finally:
+            try:
+                if self.socket:
+                    self.socket.shutdown(socket.SHUT_RDWR)
+                    self.socket.close()
+            except Exception:
+                # Ignore errors during shutdown
+                pass
